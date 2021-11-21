@@ -1,0 +1,3 @@
+[submodule "control/MPC"]
+	path = control/MPC
+	url = https://github.com/rjk2147/MPC

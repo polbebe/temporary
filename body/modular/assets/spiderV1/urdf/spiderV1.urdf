@@ -1,0 +1,743 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-1-g15f4949  Build Version: 1.6.7594.29634
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="spiderV1">
+  <link
+    name="body">
+    <inertial>
+      <origin
+        xyz="-1.12657634616443E-06 -0.0120586213354123 0.0464637399514405"
+        rpy="0 0 0" />
+      <mass
+        value="0.725004971927433" />
+      <inertia
+        ixx="0.00397015516610743"
+        ixy="3.16527990957326E-09"
+        ixz="2.7501749356732E-08"
+        iyy="0.00509665824727541"
+        iyz="-0.000112720343179442"
+        izz="0.00640051298538735" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://spiderV1/meshes/body.STL" />
+      </geometry>
+      <material
+        name="white">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://spiderV1/meshes/body.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="00">
+    <inertial>
+      <origin
+        xyz="-3.39491982303403E-06 -3.39491982300627E-06 0.0634401392063371"
+        rpy="0 0 0" />
+      <mass
+        value="0.111045661776905" />
+      <inertia
+        ixx="9.83066790099248E-05"
+        ixy="1.27985462202571E-12"
+        ixz="-6.57477758498197E-09"
+        iyy="9.82820252429534E-05"
+        iyz="-6.57477758503417E-09"
+        izz="3.28395202168772E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://spiderV1/meshes/00.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.6078431373 0.8666666667 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://spiderV1/meshes/00.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="bodyto00"
+    type="revolute">
+    <origin
+      xyz="0.12089 0.039279 0.0314"
+      rpy="3.1416 -1.3821 0.31416" />
+    <parent
+      link="body" />
+    <child
+      link="00" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="-1.0471975512"
+      upper="1.0471975512"
+      effort="2"
+      velocity="0.2094396" />
+  </joint>
+  <link
+    name="01">
+    <inertial>
+      <origin
+        xyz="-1.31848044713778E-05 -1.31848044713639E-05 0.0862647647274989"
+        rpy="0 0 0" />
+      <mass
+        value="0.142964243137377" />
+      <inertia
+        ixx="0.000240310510603849"
+        ixy="2.4852770915967E-11"
+        ixz="-3.81981815966254E-08"
+        iyy="0.000258360340545962"
+        iyz="-3.81981815965665E-08"
+        izz="3.69209045828823E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://spiderV1/meshes/01.STL" />
+      </geometry>
+      <material
+        name="white">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://spiderV1/meshes/01.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="00to01"
+    type="revolute">
+    <origin
+      xyz="0 0 0.091"
+      rpy="0 0 -1.5708" />
+    <parent
+      link="00" />
+    <child
+      link="01" />
+    <axis
+      xyz="-1 0 0" />
+    <limit
+      lower="-1.0471975512"
+      upper="1.0471975512"
+      effort="2"
+      velocity="0.2094396" />
+  </joint>
+  <link
+    name="02">
+    <inertial>
+      <origin
+        xyz="-4.16333634234434E-17 -0.0630718737353475 0.0691609359333019"
+        rpy="0 0 0" />
+      <mass
+        value="0.185903116212669" />
+      <inertia
+        ixx="0.000687979499549438"
+        ixy="3.55753837846806E-19"
+        ixz="1.35525271560688E-20"
+        iyy="0.000110362108727967"
+        iyz="0.000137773891500956"
+        izz="0.000617794519777098" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://spiderV1/meshes/02.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.6078431373 0.8666666667 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://spiderV1/meshes/02.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="01to02"
+    type="revolute">
+    <origin
+      xyz="0 0 0.131"
+      rpy="0 0 0" />
+    <parent
+      link="01" />
+    <child
+      link="02" />
+    <axis
+      xyz="-1 0 0" />
+    <limit
+      lower="-1.0471975512"
+      upper="1.0471975512"
+      effort="2"
+      velocity="0.2094396" />
+  </joint>
+  <link
+    name="10">
+    <inertial>
+      <origin
+        xyz="-3.39491982305484E-06 -3.39491982305484E-06 0.0634401392063371"
+        rpy="0 0 0" />
+      <mass
+        value="0.111045661776905" />
+      <inertia
+        ixx="9.83066790099247E-05"
+        ixy="1.27985461990813E-12"
+        ixz="-6.57477758498886E-09"
+        iyy="9.82820252429533E-05"
+        iyz="-6.57477758497319E-09"
+        izz="3.28395202168772E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://spiderV1/meshes/10.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.6078431373 0.8666666667 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://spiderV1/meshes/10.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="bodyto10"
+    type="revolute">
+    <origin
+      xyz="0.074713 -0.10283 0.0314"
+      rpy="3.1416 -1.3821 -0.94248" />
+    <parent
+      link="body" />
+    <child
+      link="10" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="-1.0471975512"
+      upper="1.0471975512"
+      effort="2"
+      velocity="0.2094396" />
+  </joint>
+  <link
+    name="11">
+    <inertial>
+      <origin
+        xyz="-1.31889459462631E-05 -1.32008282054258E-05 0.0862647647244151"
+        rpy="0 0 0" />
+      <mass
+        value="0.142964243137377" />
+      <inertia
+        ixx="0.000240310510607527"
+        ixy="2.93953983181004E-11"
+        ixz="-3.81884344862817E-08"
+        iyy="0.000258360340560135"
+        iyz="-3.81570309857139E-08"
+        izz="3.69209045650321E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://spiderV1/meshes/11.STL" />
+      </geometry>
+      <material
+        name="white">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://spiderV1/meshes/11.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="10to11"
+    type="revolute">
+    <origin
+      xyz="0 0 0.091"
+      rpy="0 0 -1.5708" />
+    <parent
+      link="10" />
+    <child
+      link="11" />
+    <axis
+      xyz="-1 0 0" />
+    <limit
+      lower="-1.0471975512"
+      upper="1.0471975512"
+      effort="2"
+      velocity="0.2094396" />
+  </joint>
+  <link
+    name="12">
+    <inertial>
+      <origin
+        xyz="-1.91598807930404E-08 -0.0630718865846869 0.0691609242152382"
+        rpy="0 0 0" />
+      <mass
+        value="0.185903116212669" />
+      <inertia
+        ixx="0.000687979499549397"
+        ixy="-1.51693224760628E-10"
+        ixz="3.79723966300542E-11"
+        iyy="0.000110362057534268"
+        iyz="0.000137773797225564"
+        izz="0.000617794570970837" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://spiderV1/meshes/12.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.6078431373 0.8666666667 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://spiderV1/meshes/12.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="11to12"
+    type="revolute">
+    <origin
+      xyz="0 0 0.131"
+      rpy="0 0 0" />
+    <parent
+      link="11" />
+    <child
+      link="12" />
+    <axis
+      xyz="-1 0 0" />
+    <limit
+      lower="-1.0471975512"
+      upper="1.0471975512"
+      effort="2"
+      velocity="0.2094396" />
+  </joint>
+  <link
+    name="20">
+    <inertial>
+      <origin
+        xyz="-3.39491982309648E-06 -3.39491982300627E-06 0.0634401392063371"
+        rpy="0 0 0" />
+      <mass
+        value="0.111045661776905" />
+      <inertia
+        ixx="9.83066790099249E-05"
+        ixy="1.27985462668439E-12"
+        ixz="-6.57477758497149E-09"
+        iyy="9.82820252429534E-05"
+        iyz="-6.57477758502062E-09"
+        izz="3.28395202168773E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://spiderV1/meshes/20.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.6078431373 0.8666666667 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://spiderV1/meshes/20.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="bodyto20"
+    type="revolute">
+    <origin
+      xyz="-0.074714 -0.10283 0.0314"
+      rpy="3.1416 -1.3821 -2.1991" />
+    <parent
+      link="body" />
+    <child
+      link="20" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="-1.0471975512"
+      upper="1.0471975512"
+      effort="2"
+      velocity="0.2094396" />
+  </joint>
+  <link
+    name="21">
+    <inertial>
+      <origin
+        xyz="-1.31889459501766E-05 -1.31687741158001E-05 0.0862647647293143"
+        rpy="0 0 0" />
+      <mass
+        value="0.142964243137377" />
+      <inertia
+        ixx="0.000240310510607527"
+        ixy="2.93812082377152E-11"
+        ixz="-3.81884344878233E-08"
+        iyy="0.000258360340531748"
+        iyz="-3.82393130107307E-08"
+        izz="3.69209045934193E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://spiderV1/meshes/21.STL" />
+      </geometry>
+      <material
+              name="white">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://spiderV1/meshes/21.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="20to21"
+    type="revolute">
+    <origin
+      xyz="0 0 0.091"
+      rpy="0 0 -1.5708" />
+    <parent
+      link="20" />
+    <child
+      link="21" />
+    <axis
+      xyz="-1 0 0" />
+    <limit
+      lower="-1.0471975512"
+      upper="1.0471975512"
+      effort="2"
+      velocity="0.2094396" />
+  </joint>
+  <link
+    name="22">
+    <inertial>
+      <origin
+        xyz="-1.91598834298201E-08 -0.0630718608860034 0.0691609476513601"
+        rpy="0 0 0" />
+      <mass
+        value="0.185903116212669" />
+      <inertia
+        ixx="0.000687979499549397"
+        ixy="-1.51693212664997E-10"
+        ixz="3.79724550685513E-11"
+        iyy="0.000110362159921767"
+        iyz="0.000137773985776294"
+        izz="0.000617794468583337" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://spiderV1/meshes/22.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.6078431373 0.8666666667 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://spiderV1/meshes/22.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="21to22"
+    type="revolute">
+    <origin
+      xyz="0 0 0.131"
+      rpy="0 0 0" />
+    <parent
+      link="21" />
+    <child
+      link="22" />
+    <axis
+      xyz="-1 0 0" />
+    <limit
+      lower="-1.0471975512"
+      upper="1.0471975512"
+      effort="2"
+      velocity="0.2094396" />
+  </joint>
+  <link
+    name="30">
+    <inertial>
+      <origin
+        xyz="-3.3949198230826E-06 -3.39491982307566E-06 0.0634401392063371"
+        rpy="0 0 0" />
+      <mass
+        value="0.111045661776905" />
+      <inertia
+        ixx="9.83066790099248E-05"
+        ixy="1.27985461651999E-12"
+        ixz="-6.57477758496419E-09"
+        iyy="9.82820252429533E-05"
+        iyz="-6.57477758499097E-09"
+        izz="3.28395202168772E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://spiderV1/meshes/30.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.6078431373 0.8666666667 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://spiderV1/meshes/30.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="bodyto30"
+    type="revolute">
+    <origin
+      xyz="-0.12089 0.039279 0.0314"
+      rpy="3.1416 -1.3821 2.8274" />
+    <parent
+      link="body" />
+    <child
+      link="30" />
+    <axis
+      xyz="1 0 0" />
+    <limit
+      lower="-1.0471975512"
+      upper="1.0471975512"
+      effort="2"
+      velocity="0.2094396" />
+  </joint>
+  <link
+    name="31">
+    <inertial>
+      <origin
+        xyz="-1.31848044713639E-05 -1.31848044712252E-05 0.0862647647274988"
+        rpy="0 0 0" />
+      <mass
+        value="0.142964243137377" />
+      <inertia
+        ixx="0.00024031051060385"
+        ixy="2.48527709396839E-11"
+        ixz="-3.8198181596705E-08"
+        iyy="0.000258360340545963"
+        iyz="-3.81981815969703E-08"
+        izz="3.69209045828824E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://spiderV1/meshes/31.STL" />
+      </geometry>
+      <material
+        name="white">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://spiderV1/meshes/31.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="30to31"
+    type="revolute">
+    <origin
+      xyz="0 0 0.091"
+      rpy="0 0 -1.5708" />
+    <parent
+      link="30" />
+    <child
+      link="31" />
+    <axis
+      xyz="-1 0 0" />
+    <limit
+      lower="-1.0471975512"
+      upper="1.0471975512"
+      effort="2"
+      velocity="0.2094396" />
+  </joint>
+  <link
+    name="32">
+    <inertial>
+      <origin
+        xyz="1.66533453693773E-16 -0.0630718737353471 0.0691609359333021"
+        rpy="0 0 0" />
+      <mass
+        value="0.185903116212669" />
+      <inertia
+        ixx="0.000687979499549438"
+        ixy="8.06375365786094E-19"
+        ixz="-2.43945488809238E-19"
+        iyy="0.000110362108727968"
+        iyz="0.000137773891500958"
+        izz="0.000617794519777097" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://spiderV1/meshes/32.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.6078431373 0.8666666667 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://spiderV1/meshes/32.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="31to32"
+    type="revolute">
+    <origin
+      xyz="0 0 0.131"
+      rpy="0 0 0" />
+    <parent
+      link="31" />
+    <child
+      link="32" />
+    <axis
+      xyz="-1 0 0" />
+    <limit
+      lower="-1.0471975512"
+      upper="1.0471975512"
+      effort="2"
+      velocity="0.2094396" />
+  </joint>
+</robot>
