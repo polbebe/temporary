@@ -8,6 +8,7 @@ import xml.etree.ElementTree as ET
 import random
 import pickle
 import os
+from fns import *
 
 class PinkPantherEnv(gym.Env):
 	def __init__(self, render=True):
@@ -31,6 +32,8 @@ class PinkPantherEnv(gym.Env):
 		# setTimeStep should be uses here to modify the APS
 		# Should keep a param of the joint states to be more in line with real life
 		# need to figure out what the limits of the position control are
+
+		self.count = 0
 
 		self.stepper = 0
 
@@ -82,18 +85,43 @@ class PinkPantherEnv(gym.Env):
 	def act(self, action):
 		action = action + np.random.normal(0, max(self.params['act_noise'], 0)) #??? Introduces noise ?
 		n_sim_steps = int(240/self.params['APS'])
-		for i in range(n_sim_steps):
-			p.stepSimulation()
-		for i in range(len(action)):
-			#pos, vel, forces, torque = p.getJointState(self.robotid, i)
-			if i>5:
-				p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce']/1.1, maxVelocity=self.params['maxVel']/1.6)
-			else:
-				p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce']/1.1, maxVelocity=self.params['maxVel']/1.3)
 
-			#p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce'], maxVelocity=self.params['maxVel'])
-		if self.render:
-			time.sleep(1./self.params['APS'])
+		if self.count == 0:
+			pos_prev = self.convFns([0., 0.15, 0.09572864, 0., 0.15, 0.10310078, 0., 0.15, 0.09572864, 0., 0.15, 0.10310078], "sim2real")
+			pos = self.convFns(action, "sim2real")
+			delta_pos = abs(pos-pos_prev)
+			steps = int(max(delta_pos)/15)
+			m = []
+			for i in range(len(pos)):
+				m.append(np.linspace(pos_prev[i], pos[i], steps))
+			m_t = np.array(m).T.tolist()
+			for i in m_t:
+				for i in range(n_sim_steps):
+					p.stepSimulation()
+				for i in range(len(action)):
+					#pos, vel, forces, torque = p.getJointState(self.robotid, i)
+					if i>5:
+						p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce']/1., maxVelocity=self.params['maxVel']/1.6)
+					else:
+						p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce']/1., maxVelocity=self.params['maxVel']/1.3)
+
+					#p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce'], maxVelocity=self.params['maxVel'])
+				if self.render:
+					time.sleep(1./self.params['APS'])
+		else:
+			for i in range(n_sim_steps):
+				p.stepSimulation()
+			for i in range(len(action)):
+				#pos, vel, forces, torque = p.getJointState(self.robotid, i)
+				if i>5:
+					p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce']/1., maxVelocity=self.params['maxVel']/1.6)
+				else:
+					p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce']/1., maxVelocity=self.params['maxVel']/1.3)
+
+				#p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce'], maxVelocity=self.params['maxVel'])
+			if self.render:
+				time.sleep(1./self.params['APS'])
+		self.count+=1
 
 	def reset(self, friction_values=[0.2, 0.4, 0.4, 0.2]):
 		p.resetSimulation()
@@ -126,6 +154,19 @@ class PinkPantherEnv(gym.Env):
 		self.x0, self.y0 =  self.get_obs()[-1], self.get_obs()[-2]
 		return self.get_obs()
 
+	def convFns(self, pos, convType):
+		conv =	[left_armpit, left_elbow, left_shoulder, right_armpit, right_elbow, right_shoulder, 
+				left_armpit, left_elbow, left_shoulder, right_armpit, right_elbow, right_shoulder]
+		targ = np.zeros(12)
+		for i in range(len(pos)):
+			if i==0:
+				targ[i] = conv[i](pos[i], convType, "front")
+			elif i==6:
+				targ[i] = conv[i](pos[i], convType, "back")
+			else:
+				targ[i] = conv[i](pos[i], convType)
+		return targ
+
 	def set(self):
 		n_sim_steps = int(240/self.params['APS'])
 		# Reset down
@@ -144,12 +185,14 @@ class PinkPantherEnv(gym.Env):
 			vel = [1500, 1500, 1500, 1500, 1500, 1500, 1000, 1000, 1000, 1000, 1000, 1000]
 			for x in range(len(vel)):
 				vel[x] = vel[x]/150
-			#pos = [0., 0.15, 0.09572864, 0., 0.15, 0.10310078, 0., 0.15, 0.09572864, 0., 0.15, 0.10310078] #Normal Stand up
-			pos = [0., 0., 0., 0., 0., 0., 0., 0.15, 0.15, 0., 0.15, 0.15] # Params at t=0
+			pos = [0., 0.15, 0.09572864, 0., 0.15, 0.10310078, 0., 0.15, 0.09572864, 0., 0.15, 0.10310078] #Normal Stand up
+			#pos = [0., 0., 0., 0., 0., 0., 0., 0.15, 0.15, 0., 0.15, 0.15] # Params at t=0
 			for i in range(12):
 				p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=pos[i], force=self.params['maxForce'], maxVelocity=self.params['maxVel']/vel[i])
 			if self.render:
 				time.sleep(1./self.params['APS'])
+
+
 
 	def finish(self):
 		n_sim_steps = int(240/self.params['APS'])
@@ -203,9 +246,7 @@ def get_action(steps):
 	#params = np.array([0.1, 0.0, 0.13, 0.2, 0.3, 2]) # 	sim 0.12m/s 	real 0.03m/s 	Dec 1,	11:51
 	#params = np.array([0.15, 0.0, 0.2, 0.15, 0.2, 0]) #	sim BAD			real BAD		Jul 31,	19:00 	Smooth Criminal
 	params = np.array([0.15, 0.0, 0.19, 0.2, 0.23, 2.05]) # sim 0.04m/s 	real 0.05m/s 	Dec 1,	21:43
-	p = np.load('body/PinkPanther/params/ROB/best_overall-2.npy')
-	print(p)
-	params = np.array(p)
+	#params = np.array(np.load('body/PinkPanther/params/ROB/best_overall-0.npy'))
 
 	return act(steps, *params)
 
@@ -228,6 +269,7 @@ def act(t, p0, p1, p2, p3, p4, p5):
 
 
 if __name__ == '__main__':
+
 	env = PinkPantherEnv(render=True)
 	#print(find_fric_params(env))
 	
