@@ -87,7 +87,7 @@ class PinkPantherEnv(gym.Env):
 		for i in range(len(action)):
 			#pos, vel, forces, torque = p.getJointState(self.robotid, i)
 			if i>5:
-				p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce']/1.2, maxVelocity=self.params['maxVel']/1.6)
+				p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce']/1.1, maxVelocity=self.params['maxVel']/1.6)
 			else:
 				p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce']/1.1, maxVelocity=self.params['maxVel']/1.3)
 
@@ -196,13 +196,14 @@ class PinkPantherEnv(gym.Env):
 			return obs, r, done, {}
 
 	def get_dist_and_time(self):
-		return p.getBasePositionAndOrientation(self.robotid), 100/(self.params['APS']*self.params['step'])
+		return p.getBasePositionAndOrientation(self.robotid), 1/(self.params['APS']*self.params['step'])
 
 def get_action(steps):
-	params = np.array([0.13, 0.0, 0.17, 0.2, 0.3, 0.0]) # 0.9m/s sim 0.5m/s real
-	params = np.array([0.1, 0.0, 0.13, 0.2, 0.3, 2]) # 1.1m/s sim 0.1
-	params = np.array([0.1, 0.0, 0.13, 0.2, 0.3, 2])
-	#params = np.array([0.15, 0.0, 0.2, 0.15, 0.2]) # Smooth Criminal, Jul 31, 19:00
+	#params = np.array([0.13, 0.0, 0.17, 0.2, 0.3, 0.0]) #	sim BAD 		real BAD 		Dec 1,	11:54
+	#params = np.array([0.1, 0.0, 0.13, 0.2, 0.3, 2]) # 	sim 0.12m/s 	real 0.03m/s 	Dec 1,	11:51
+	#params = np.array([0.15, 0.0, 0.2, 0.15, 0.2, 0]) #	sim BAD			real BAD		Jul 31,	19:00 	Smooth Criminal
+	params = np.array([0.15, 0.0, 0.19, 0.2, 0.23, 2.05]) # sim 0.04m/s 	real 0.05m/s 	Dec 1,	21:43
+
 	return act(steps, *params)
 
 def act(t, p0, p1, p2, p3, p4, p5):
@@ -234,7 +235,8 @@ if __name__ == '__main__':
 	reward = 0
 
 	start = time.time()
-	for i in range(100):
+	stps = 300
+	for i in range(stps):
 		action = get_action(i)
 		done = False
 		while not done:
@@ -246,10 +248,10 @@ if __name__ == '__main__':
 	print(reward)
 	print()
 	print("{} m".format(env.get_dist_and_time()[0][0][0]))
-	print("{} s".format(env.get_dist_and_time()[1]))
+	print("{} s".format(env.get_dist_and_time()[1]*stps))
 	print('-----------------------')
 	print('-----------------------')
-	print("{} m/s".format((env.get_dist_and_time()[0][0][0])/(env.get_dist_and_time()[1])))
+	print("{} m/s".format((env.get_dist_and_time()[0][0][0])/(env.get_dist_and_time()[1]*stps)))
 	print('-----------------------')
 	print('-----------------------')
 	
