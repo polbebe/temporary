@@ -245,8 +245,11 @@ def get_action(steps):
 	#params = np.array([0.13, 0.0, 0.17, 0.2, 0.3, 0.0]) #	sim BAD 		real BAD 		Dec 1,	11:54
 	#params = np.array([0.1, 0.0, 0.13, 0.2, 0.3, 2]) # 	sim 0.12m/s 	real 0.03m/s 	Dec 1,	11:51
 	#params = np.array([0.15, 0.0, 0.2, 0.15, 0.2, 0]) #	sim BAD			real BAD		Jul 31,	19:00 	Smooth Criminal
-	params = np.array([0.15, 0.0, 0.19, 0.2, 0.23, 2.05]) # sim 0.04m/s 	real 0.05m/s 	Dec 1,	21:43
-	#params = np.array(np.load('body/PinkPanther/params/ROB/best_overall-0.npy'))
+	#params = np.array([0.15, 0.0, 0.19, 0.2, 0.23, 2.05]) # sim 0.04m/s 	real 0.05m/s 	Dec 1,	21:43
+	params = np.array(np.load('body/PinkPanther/params/ROB/best_overall-2.npy'))
+	params[4] -= 22
+	print(params)
+	#print(params[4])
 
 	return act(steps, *params)
 
@@ -277,17 +280,19 @@ if __name__ == '__main__':
 
 	# reward for gait
 	reward = 0
-
+	actions = []
 	start = time.time()
-	stps = 300
+	stps = 100
 	for i in range(stps):
 		action = get_action(i)
+		actions.append(action)
 		done = False
 		while not done:
 			obs, r, done, info, rew = env.step(action)
 			reward += rew
 	#reward += 10 * (env.get_dist_and_time()[0][0][0]/0.1)
-
+	path = os.path.join('body/PinkPanther', 'best_overall_2_actions_-22')
+	np.save(path, actions)
 	print()
 	print(reward)
 	print()
