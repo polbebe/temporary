@@ -1,6 +1,9 @@
 import numpy as np
 
-actions = np.load("body/PinkPanther/best_overall_2_actions_-22.npy")
+actions = np.load("body/PinkPanther/new-0_actions.npy")
+#actions = np.load('body/PinkPanther/params/ROB/new-0.npy')
+#print(actions)
+
 delta_actions = []
 
 for i in range(len(actions)-1):
