@@ -118,12 +118,10 @@ def continuous_hill_climber(env):
 	e = 0
 	currentPoint = random_para()
 	bestScore = run_sim(env, currentPoint)
-	stepSize = np.zeros(6)
-	for i in range(len(stepSize)):
-		stepSize[i] = 0.01
+	stepSize = np.ones(6) * 6
 	accel = 1.2
 	candidate = np.array([-accel, -1/accel, 1/accel, accel])
-	epsilon = 1
+	epsilon = 0.01
 	beforeScore = bestScore-2*epsilon
 	while ((bestScore - beforeScore) > epsilon):
 		print('{} - {}'.format(e, bestScore))
@@ -150,7 +148,7 @@ def continuous_hill_climber(env):
 if __name__ == '__main__':
 	from body.PinkPanther.PinkPantherEnv_6 import PinkPantherEnv
 	env = PinkPantherEnv(render=False)
-	epochs = 20
+	epochs = 50
 	epoch_master = [-np.inf, []]
 	epoch_runnerup = [-np.inf, []]
 	print()
@@ -160,7 +158,9 @@ if __name__ == '__main__':
 		print('EPOCH {}'.format(i+1))
 		# perform hill climber
 		best = continuous_hill_climber(env)
-		path = os.path.join('body/PinkPanther/params/train1', 'best_epoch{}'.format(i+1))
+		if not os.path.isdir('../body/PinkPanther/params/train1'):
+			os.makedirs('../body/PinkPanther/params/train1')
+		path = os.path.join('../body/PinkPanther/params/train1', 'best_epoch{}'.format(i+1))
 		np.save(path, best[1])
 		print('Score of best gait: {}'.format(best[0]))
 		# update best so far
@@ -172,9 +172,11 @@ if __name__ == '__main__':
 	print()
 	print()
 	print('BEST GAIT OVERALL: {}'.format(epoch_master[0]))
-	path = os.path.join('body/PinkPanther/params/train0', 'best_overall')
+	if not os.path.isdir('../body/PinkPanther/params/train0'):
+		os.makedirs('../body/PinkPanther/params/train0')
+	path = os.path.join('../body/PinkPanther/params/train0', 'best_overall')
 	np.save(path, epoch_master[1])
 	print()
 	print('RUNNERUP: {}'.format(epoch_runnerup[0]))
-	path = os.path.join('body/PinkPanther/params/train0', 'runnerup_overall')
+	path = os.path.join('../body/PinkPanther/params/train0', 'runnerup_overall')
 	np.save(path, epoch_runnerup[1])

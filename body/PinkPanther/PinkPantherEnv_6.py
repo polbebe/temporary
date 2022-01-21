@@ -26,6 +26,7 @@ class PinkPantherEnv(gym.Env):
 			'gravity': -9.8,
 			'act_noise': 0.0,
 			'step': 1,
+			'delta_p': 0.21
 		}
 		# TODO
 		# setTimeStep should be uses here to modify the APS
@@ -39,7 +40,7 @@ class PinkPantherEnv(gym.Env):
 		self.friction_values = [0.2, 0.4, 0.4, 0.2]
 
 		#self.urdf = "C:/Users/polbe/OneDrive/Desktop/RESEARCH/PinkPanther/git-fork-multi_robot/body/PinkPanther/PinkPanther_CML/urdf/pp_urdf_final.urdf" #PC
-		self.urdf = "body/PinkPanther/PinkPanther_CML/urdf/pp_urdf_final.urdf" #MAC
+		self.urdf = "../body/PinkPanther/PinkPanther_CML/urdf/pp_urdf_final.urdf" #MAC
 
 		obs = self.reset(self.friction_values)
 
@@ -75,17 +76,19 @@ class PinkPantherEnv(gym.Env):
 		# Pos only
 		jointVals = np.array([joint[0] for joint in jointInfo]).flatten()
 
-		obs = np.concatenate([jointVals, self.q, np.array([self.p[2], self.p[1], self.p[0]])])
+		self.obs = np.concatenate([jointVals, self.q, np.array([self.p[2], self.p[1], self.p[0]])])
 		# print(self.v)
-		return obs
+		return self.obs
 
 	def act(self, action):
-		action = action + np.random.normal(0, max(self.params['act_noise'], 0)) #??? Introduces noise ?
+		delta = action - self.obs[:len(action)].clip(-self.params['delta_p'], self.params['delta_p'])
+		action = self.obs[:len(action)] + delta
+		action = action + np.random.normal(0, max(self.params['act_noise'], 0))
 		n_sim_steps = int(240/self.params['APS'])
 		for i in range(n_sim_steps):
 			p.stepSimulation()
 		for i in range(len(action)):
-			#pos, vel, forces, torque = p.getJointState(self.robotid, i)
+			pos, vel, forces, torque = p.getJointState(self.robotid, i)
 			if i>5:
 				p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce']/1.2, maxVelocity=self.params['maxVel']/1.6)
 			else:
@@ -100,7 +103,7 @@ class PinkPantherEnv(gym.Env):
 		p.setAdditionalSearchPath(pybullet_data.getDataPath())
 		p.setGravity(0,0,self.params['gravity'])
 		#planeId = p.loadURDF("C:/Users/polbe/OneDrive/Desktop/RESEARCH/PinkPanther/git-fork-multi_robot/body/PinkPanther/plane/plane.urdf") #PC
-		planeId = p.loadURDF("body/PinkPanther/plane/plane.urdf") #MAC
+		planeId = p.loadURDF("../body/PinkPanther/plane/plane.urdf") #MAC
 		#standId = p.loadURDF("C:/Users/polbe/OneDrive/Desktop/RESEARCH/PinkPanther/git-fork-multi_robot/body/PinkPanther/PP_Stand_Thin/urdf/PP_Stand_Thin.urdf")
 		robotStartPos = [0,0,0.2]
 		robotStartOrientation = p.getQuaternionFromEuler([0,0,0])
@@ -113,6 +116,7 @@ class PinkPantherEnv(gym.Env):
 		#p.changeDynamics(self.robotid, 5, lateralFriction=friction_values[2], spinningFriction=friction_values[3], rollingFriction=0.0001)
 		#p.changeDynamics(self.robotid, 8, lateralFriction=friction_values[2], spinningFriction=friction_values[3], rollingFriction=0.0001)
 		#p.changeDynamics(self.robotid, 11, lateralFriction=friction_values[2], spinningFriction=friction_values[3], rollingFriction=0.0001)
+		# p.changeDynamics(planeId, -1, lateralFriction=0.99)
 		p.changeDynamics(self.robotid, 2, lateralFriction=0.99)
 		p.changeDynamics(self.robotid, 5, lateralFriction=0.99)
 		p.changeDynamics(self.robotid, 8, lateralFriction=0.99)
@@ -164,13 +168,20 @@ class PinkPantherEnv(gym.Env):
 				time.sleep(1./self.params['APS'])
 
 	def rew_fn(self, x, y, z):
+		min_z = 0.18
 		deltax = x - self.x0
 		deltay = y - self.y0
 		# penalize for z<0.2?
-		rew = (100*deltax - 50*abs(deltay))
+		rew = (100*deltax - 50*abs(deltay)) - int(z < min_z)*(20*(min_z-z))**2
 		self.x0 = x
 		self.y0 = y
 		return rew
+
+	def check(self):
+		is_good = True
+		if self.p[-2] < 0.15:
+			is_good = False
+		return is_good
 
 	def step(self, action):
 		#if ((self.stepper != 0) and (self.stepper%self.params['step'] == 0)):
@@ -187,6 +198,9 @@ class PinkPantherEnv(gym.Env):
 			# r = 100*obs[-1] - 100*np.abs(obs[-2]) # positive x direction
 			# print(self.p)
 			rew = self.rew_fn(obs[-1], obs[-2], obs[-3])
+			# if not self.check():
+			# 	rew = -10
+			# 	done = True
 			return obs, r, done, {}, rew
 		else:
 			self.stepper += 1
