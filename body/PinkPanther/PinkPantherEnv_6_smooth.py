@@ -8,6 +8,7 @@ import xml.etree.ElementTree as ET
 import random
 import pickle
 import os
+from fns import *
 
 class PinkPantherEnv(gym.Env):
 	def __init__(self, render=True):
@@ -20,17 +21,19 @@ class PinkPantherEnv(gym.Env):
 		self.mode = p.POSITION_CONTROL
 
 		self.params = {
-			'APS': 7, # Actions Per Second
+			'APS': 21, # Actions Per Second
 			'maxForce': 1.667,
 			'maxVel': 6.545,
 			'gravity': -9.8,
-			'act_noise': 0.01,
-			'step': 2,
+			'act_noise': 0.0,
+			'step': 1,
 		}
 		# TODO
 		# setTimeStep should be uses here to modify the APS
 		# Should keep a param of the joint states to be more in line with real life
 		# need to figure out what the limits of the position control are
+
+		self.count = 0
 
 		self.stepper = 0
 
@@ -75,25 +78,50 @@ class PinkPantherEnv(gym.Env):
 		# Pos only
 		jointVals = np.array([joint[0] for joint in jointInfo]).flatten()
 
-		obs = np.concatenate([jointVals, self.q, np.array([self.p[1], self.p[0]])])
+		obs = np.concatenate([jointVals, self.q, np.array([self.p[2], self.p[1], self.p[0]])])
 		# print(self.v)
 		return obs
 
 	def act(self, action):
 		action = action + np.random.normal(0, max(self.params['act_noise'], 0)) #??? Introduces noise ?
 		n_sim_steps = int(240/self.params['APS'])
-		for i in range(n_sim_steps):
-			p.stepSimulation()
-		for i in range(len(action)):
-			#pos, vel, forces, torque = p.getJointState(self.robotid, i)
-			if i>5:
-				p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce']/1.6, maxVelocity=self.params['maxVel']/1.)
-			else:
-				p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce']/1., maxVelocity=self.params['maxVel']/1.)
 
-			#p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce'], maxVelocity=self.params['maxVel'])
-		if self.render:
-			time.sleep(1./self.params['APS'])
+		if self.count == 0:
+			pos_prev = self.convFns([0., 0.15, 0.09572864, 0., 0.15, 0.10310078, 0., 0.15, 0.09572864, 0., 0.15, 0.10310078], "sim2real")
+			pos = self.convFns(action, "sim2real")
+			delta_pos = abs(pos-pos_prev)
+			steps = int(max(delta_pos)/15)
+			m = []
+			for i in range(len(pos)):
+				m.append(np.linspace(pos_prev[i], pos[i], steps))
+			m_t = np.array(m).T.tolist()
+			for i in m_t:
+				for i in range(n_sim_steps):
+					p.stepSimulation()
+				for i in range(len(action)):
+					#pos, vel, forces, torque = p.getJointState(self.robotid, i)
+					if i>5:
+						p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce']/1., maxVelocity=self.params['maxVel']/1.6)
+					else:
+						p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce']/1., maxVelocity=self.params['maxVel']/1.3)
+
+					#p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce'], maxVelocity=self.params['maxVel'])
+				if self.render:
+					time.sleep(1./self.params['APS'])
+		else:
+			for i in range(n_sim_steps):
+				p.stepSimulation()
+			for i in range(len(action)):
+				#pos, vel, forces, torque = p.getJointState(self.robotid, i)
+				if i>5:
+					p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce']/1., maxVelocity=self.params['maxVel']/1.6)
+				else:
+					p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce']/1., maxVelocity=self.params['maxVel']/1.3)
+
+				#p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce'], maxVelocity=self.params['maxVel'])
+			if self.render:
+				time.sleep(1./self.params['APS'])
+		self.count+=1
 
 	def reset(self, friction_values=[0.2, 0.4, 0.4, 0.2]):
 		p.resetSimulation()
@@ -107,19 +135,37 @@ class PinkPantherEnv(gym.Env):
 		self.robotid = p.loadURDF(self.urdf, robotStartPos, robotStartOrientation, flags=p.URDF_USE_SELF_COLLISION)
 		# Setting Friction
 		# Plane
-		p.changeDynamics(planeId, -1, lateralFriction=friction_values[0], spinningFriction=friction_values[1], rollingFriction=0.0001)
+		#p.changeDynamics(planeId, -1, lateralFriction=friction_values[0], spinningFriction=friction_values[1], rollingFriction=0.0001)
 		# Forearm links of robot
-		p.changeDynamics(self.robotid, 2, lateralFriction=friction_values[2], spinningFriction=friction_values[3], rollingFriction=0.0001)
-		p.changeDynamics(self.robotid, 5, lateralFriction=friction_values[2], spinningFriction=friction_values[3], rollingFriction=0.0001)
-		p.changeDynamics(self.robotid, 8, lateralFriction=friction_values[2], spinningFriction=friction_values[3], rollingFriction=0.0001)
-		p.changeDynamics(self.robotid, 11, lateralFriction=friction_values[2], spinningFriction=friction_values[3], rollingFriction=0.0001)
-		
+		#p.changeDynamics(self.robotid, 2, lateralFriction=friction_values[2], spinningFriction=friction_values[3], rollingFriction=0.0001)
+		#p.changeDynamics(self.robotid, 5, lateralFriction=friction_values[2], spinningFriction=friction_values[3], rollingFriction=0.0001)
+		#p.changeDynamics(self.robotid, 8, lateralFriction=friction_values[2], spinningFriction=friction_values[3], rollingFriction=0.0001)
+		#p.changeDynamics(self.robotid, 11, lateralFriction=friction_values[2], spinningFriction=friction_values[3], rollingFriction=0.0001)
+		p.changeDynamics(self.robotid, 2, lateralFriction=0.99)
+		p.changeDynamics(self.robotid, 5, lateralFriction=0.99)
+		p.changeDynamics(self.robotid, 8, lateralFriction=0.99)
+		p.changeDynamics(self.robotid, 11, lateralFriction=0.99)
+
 		self.p, self.q = p.getBasePositionAndOrientation(self.robotid)
 		self.p, self.q = np.array(self.p), np.array(self.q)
 		self.i = 0
 		self.set()
 		# print(self.p)
+		self.x0, self.y0 =  self.get_obs()[-1], self.get_obs()[-2]
 		return self.get_obs()
+
+	def convFns(self, pos, convType):
+		conv =	[left_armpit, left_elbow, left_shoulder, right_armpit, right_elbow, right_shoulder, 
+				left_armpit, left_elbow, left_shoulder, right_armpit, right_elbow, right_shoulder]
+		targ = np.zeros(12)
+		for i in range(len(pos)):
+			if i==0:
+				targ[i] = conv[i](pos[i], convType, "front")
+			elif i==6:
+				targ[i] = conv[i](pos[i], convType, "back")
+			else:
+				targ[i] = conv[i](pos[i], convType)
+		return targ
 
 	def set(self):
 		n_sim_steps = int(240/self.params['APS'])
@@ -139,12 +185,14 @@ class PinkPantherEnv(gym.Env):
 			vel = [1500, 1500, 1500, 1500, 1500, 1500, 1000, 1000, 1000, 1000, 1000, 1000]
 			for x in range(len(vel)):
 				vel[x] = vel[x]/150
-			#pos = [0., 0.15, 0.09572864, 0., 0.15, 0.10310078, 0., 0.15, 0.09572864, 0., 0.15, 0.10310078] #Normal Stand up
-			pos = [0., 0., 0., 0., 0., 0., 0., 0.15, 0.15, 0., 0.15, 0.15] # Params at t=0
+			pos = [0., 0.15, 0.09572864, 0., 0.15, 0.10310078, 0., 0.15, 0.09572864, 0., 0.15, 0.10310078] #Normal Stand up
+			#pos = [0., 0., 0., 0., 0., 0., 0., 0.15, 0.15, 0., 0.15, 0.15] # Params at t=0
 			for i in range(12):
 				p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=pos[i], force=self.params['maxForce'], maxVelocity=self.params['maxVel']/vel[i])
 			if self.render:
 				time.sleep(1./self.params['APS'])
+
+
 
 	def finish(self):
 		n_sim_steps = int(240/self.params['APS'])
@@ -158,9 +206,18 @@ class PinkPantherEnv(gym.Env):
 			if self.render:
 				time.sleep(1./self.params['APS'])
 
+	def rew_fn(self, x, y, z):
+		deltax = x - self.x0
+		deltay = y - self.y0
+		# penalize for z<0.2?
+		rew = (100*deltax - 50*abs(deltay))
+		self.x0 = x
+		self.y0 = y
+		return rew
 
 	def step(self, action):
-		if ((self.stepper != 0) and (self.stepper%self.params['step'] == 0)):
+		#if ((self.stepper != 0) and (self.stepper%self.params['step'] == 0)):
+		if ((self.stepper == 0) and (self.stepper%self.params['step'] == 0)):
 			self.act(action)
 			obs = self.get_obs()
 			self.i += 1
@@ -172,7 +229,8 @@ class PinkPantherEnv(gym.Env):
 			# r = -100*obs[-2] # positive y direction (aka turn right)
 			# r = 100*obs[-1] - 100*np.abs(obs[-2]) # positive x direction
 			# print(self.p)
-			return obs, r, done, {}
+			rew = self.rew_fn(obs[-1], obs[-2], obs[-3])
+			return obs, r, done, {}, rew
 		else:
 			self.stepper += 1
 			obs = self.get_obs()
@@ -181,73 +239,68 @@ class PinkPantherEnv(gym.Env):
 			return obs, r, done, {}
 
 	def get_dist_and_time(self):
-		return p.getBasePositionAndOrientation(self.robotid), 400/(self.params['APS']*self.params['step'])
+		return p.getBasePositionAndOrientation(self.robotid), 1/(self.params['APS']*self.params['step'])
 
 def get_action(steps):
-	#params = np.array([0.14614868614618778, 0.039950305577793714, 0.14208641398550012, -0.03942547972933386, -0.14865425255054665]) # Trained sin_gait 16, Oct 18 13:03
-	#params = np.array([0.2975101465629398, 0.0738573448980571, 0.06436329085148003, -0.07155441809452212, -0.20527739450423024]) # Trained sin_gait 15, Oct 18 12:55
-	#params = np.array([0.2671251771895253, -0.009906918338340965, 0.1546691019072258, -0.09140993522886807, -0.10561456851248004]) # Trained sin_gait 14, Oct 18 12:41
-	#params = np.array([0.25878876316347815, 0.06820390233992102, 0.14585042746304008, -0.05689391448937673, 0.2076067714154396]) # Trained sin_gait 13, Oct 18 12:27
-	#params = np.array([0.2726908868798636, 0.05067252095613235, 0.025433021525379563, -0.05659702274083825, 0.19732902375364758]) # Trained sin_gait 12, Oct 18 12:17
-	#params = np.array([0.21576761139156111, -0.042273843205438304, 0.18195094583994065, 0.2570013737370814, 0.14709216408366182]) # Trained sin_gait 11, Oct 18 12:08
-	#params = np.array([0.26627461803158153, -0.07003391611492442, 0.014115506970195701, 0.27435681602844014, 0.18942814123569285]) # Trained sin_gait 10, Oct 18 11:53
-	#params = np.array([0.29130778560399573, -0.07353579237608579, 0.377089826353599, 0.09310087360284808, -0.17335886983381554]) # Trained sin_gait 9, Oct 18 11:40
-	#params = np.array([0.061920849806604124, 0.5624317131553744, 0.30902191605233165, -0.43691480597502785, -0.15400827632090283]) # Trained sin_gait 8, Oct 17 19:14
-	#params = np.array([0.24495851730947005, 0.18187873796178136, 0.2020333429029758, -0.3852743697870839, -0.2094960812992037]) # Trained sin_gait 7, Oct 17 19:01
-	#params = np.array([0.2730837183456571, 0.1535348737949196, 0.4851384263115792, 0.2942598304855175, 0.1680091186755069]) # Trained sin_gait 6, Oct 17 18:44
-	#params = np.array([0.2980418533307479, 0.01878523690431866, 0.022546654023646796, -0.2685025304630598, -0.2080157428428239]) # Trained sin_gait 5, Oct 12 13:21
-	#params = np.array([0.29999725385602855, 0.017357709331799365, 0.4227817847632225, 0.3180998123121198, 0.44540355056179204]) # Trained sin_gait 4, Oct 11 11:26 LOOKS GOOD - w still too large - hypothesis that largest allowable is 0.21, not sure yet tho
-	#params = np.array([0.1659549260380904, 0.3539588539946068, 0.45779253866328556, 0.04915432306745932, 0.20025888172672987]) # Trained sin_gait 3, Oct 11 11:16 FAIL
-	#params = np.array([0.28334156684116735, 0.21263452798542085, 0.3774846531520771, 0.13494608389873167, -0.5942289712811474]) # Trained sin_gait 2, Oct 11 10:48 LOOKS GOOD - not on real robot, w to large so it fails? decreased limit to 0.5 instead
-	#params = np.array([0.2824477711264705, 0.13763416648602014, 6.182891475960274, -0.33616176433656403, -0.46688718815139074]) # Trained sin_gait 1, Oct 11 10:28
-	params = np.array([0.15, 0.0, 0.2, 0.15, 0.21]) # Smooth Criminal, Jul 31 19:00
+	#params = np.array([0.13, 0.0, 0.17, 0.2, 0.3, 0.0]) #	sim BAD 		real BAD 		Dec 1,	11:54
+	#params = np.array([0.1, 0.0, 0.13, 0.2, 0.3, 2]) # 	sim 0.12m/s 	real 0.03m/s 	Dec 1,	11:51
+	#params = np.array([0.15, 0.0, 0.2, 0.15, 0.2, 0]) #	sim BAD			real BAD		Jul 31,	19:00 	Smooth Criminal
+	#params = np.array([0.15, 0.0, 0.19, 0.2, 0.23, 2.05]) # sim 0.04m/s 	real 0.05m/s 	Dec 1,	21:43
+	params = np.array(np.load('body/PinkPanther/params/ROB/new-0.npy'))
+	params[4] -= 22
+	print(params)
+	#print(params[4])
+
 	return act(steps, *params)
 
-def act(t, a, b, c, d, e):
-	# Calculate desired position
-	desired_p = np.zeros(12)
+def act(t, p0, p1, p2, p3, p4, p5):
 
-	pos_front_v = a * np.sin(t * e) + b
-	neg_front_v = -a * np.sin(t * e) + b
-	pos_back_v = c * np.sin(t * e) + d
-	neg_back_v = -c * np.sin(t * e) + d
+	# front positive
+	f_pos = p0 * np.sin(t * p4) + p1
+	# front negative
+	f_neg = -p0 * np.sin(t * p4) + p1
+	# back positive
+	b_pos = p2 * np.sin(t * p4 + p5) + p3
+	# back negative
+	b_neg = -p2 * np.sin(t * p4 + p5) + p3
 
-	front_pos = [1, 2]
-	front_neg = [4, 5]
-	back_pos = [10, 11]
-	back_neg = [7, 8]
-
-	zero = [0, 3, 6, 9]
-
-	# Assign	
-	desired_p[front_pos] = pos_front_v
-	desired_p[front_neg] = neg_front_v
-	desired_p[back_pos] = pos_back_v
-	desired_p[back_neg] = neg_back_v
-	desired_p[zero] = 0
+	desired_p = np.array([0, f_pos, f_pos, 0, f_neg, f_neg, 0, b_pos, b_pos, 0, b_neg, b_neg])
 
 	# Return desired new position
 	return desired_p
 
 
+
 if __name__ == '__main__':
 
-	env = PinkPantherEnv()
+	env = PinkPantherEnv(render=True)
 	#print(find_fric_params(env))
 	
-	obs = env.get_obs()
+	obs = env.reset()
+
+	# reward for gait
+	reward = 0
+	actions = []
 	start = time.time()
-	for i in range(300):
+	stps = 100
+	for i in range(stps):
 		action = get_action(i)
+		actions.append(action)
 		done = False
 		while not done:
-			obs, r, done, info = env.step(action)
-
+			obs, r, done, info, rew = env.step(action)
+			reward += rew
+	#reward += 10 * (env.get_dist_and_time()[0][0][0]/0.1)
+	path = os.path.join('body/PinkPanther', 'new-0_actions')
+	np.save(path, actions)
+	print()
+	print(reward)
+	print()
 	print("{} m".format(env.get_dist_and_time()[0][0][0]))
-	print("{} s".format(env.get_dist_and_time()[1]))
+	print("{} s".format(env.get_dist_and_time()[1]*stps))
 	print('-----------------------')
 	print('-----------------------')
-	print("{} m/s".format((env.get_dist_and_time()[0][0][0])/(env.get_dist_and_time()[1])))
+	print("{} m/s".format((env.get_dist_and_time()[0][0][0])/(env.get_dist_and_time()[1]*stps)))
 	print('-----------------------')
 	print('-----------------------')
 	
