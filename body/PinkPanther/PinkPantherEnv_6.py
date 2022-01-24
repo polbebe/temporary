@@ -81,7 +81,8 @@ class PinkPantherEnv(gym.Env):
 		return self.obs
 
 	def act(self, action):
-		delta = action - self.obs[:len(action)].clip(-self.params['delta_p'], self.params['delta_p'])
+		delta = (action - self.obs[:len(action)])
+		delta = delta.clip(-self.params['delta_p'], self.params['delta_p'])
 		action = self.obs[:len(action)] + delta
 		action = action + np.random.normal(0, max(self.params['act_noise'], 0))
 		n_sim_steps = int(240/self.params['APS'])
@@ -102,8 +103,8 @@ class PinkPantherEnv(gym.Env):
 		p.resetSimulation()
 		p.setAdditionalSearchPath(pybullet_data.getDataPath())
 		p.setGravity(0,0,self.params['gravity'])
-		#planeId = p.loadURDF("C:/Users/polbe/OneDrive/Desktop/RESEARCH/PinkPanther/git-fork-multi_robot/body/PinkPanther/plane/plane.urdf") #PC
-		planeId = p.loadURDF("../body/PinkPanther/plane/plane.urdf") #MAC
+		planeId = p.loadURDF("body/PinkPanther/plane/plane.urdf") #PC
+		#planeId = p.loadURDF("../body/PinkPanther/plane/plane.urdf") #MAC
 		#standId = p.loadURDF("C:/Users/polbe/OneDrive/Desktop/RESEARCH/PinkPanther/git-fork-multi_robot/body/PinkPanther/PP_Stand_Thin/urdf/PP_Stand_Thin.urdf")
 		robotStartPos = [0,0,0.2]
 		robotStartOrientation = p.getQuaternionFromEuler([0,0,0])
@@ -212,13 +213,13 @@ class PinkPantherEnv(gym.Env):
 	def get_dist_and_time(self):
 		return p.getBasePositionAndOrientation(self.robotid), 1/(self.params['APS']*self.params['step'])
 
-def get_action(steps):
+def get_action(steps, folder, gait):
 	#params = np.array([0.13, 0.0, 0.17, 0.2, 0.3, 0.0]) #	sim BAD 		real BAD 		Dec 1,	11:54
 	#params = np.array([0.1, 0.0, 0.13, 0.2, 0.3, 2]) # 	sim 0.12m/s 	real 0.03m/s 	Dec 1,	11:51
 	#params = np.array([0.15, 0.0, 0.2, 0.15, 0.2, 0]) #	sim BAD			real BAD		Jul 31,	19:00 	Smooth Criminal
-	params = np.array([0.15, 0.0, 0.19, 0.2, 0.23, 2.05]) # sim 0.04m/s 	real 0.05m/s 	Dec 1,	21:43
-	p = np.load('body/PinkPanther/params/ROB/best_overall-2.npy')
-	print(p)
+	#params = np.array([0.15, 0.0, 0.19, 0.2, 0.23, 2.05]) # sim 0.04m/s 	real 0.05m/s 	Dec 1,	21:43
+	p = np.load('body/PinkPanther/params/HillClimber/{}/{}.npy'.format(folder, gait))
+	#print(p)
 	params = np.array(p)
 
 	return act(steps, *params)
@@ -249,17 +250,22 @@ if __name__ == '__main__':
 
 	# reward for gait
 	reward = 0
-
+	folder = '23_01_2022'
+	gait = 'best_overall'
+	actions = []
 	start = time.time()
 	stps = 300
 	for i in range(stps):
-		action = get_action(i)
+		action = get_action(i, folder, gait)
+		#print(action)
+		actions.append(action)
 		done = False
 		while not done:
 			obs, r, done, info, rew = env.step(action)
 			reward += rew
 	#reward += 10 * (env.get_dist_and_time()[0][0][0]/0.1)
-
+	path = os.path.join('body/PinkPanther/params/HillClimber/{}'.format(folder), '{}_actions'.format(gait))
+	np.save(path, actions)
 	print()
 	print(reward)
 	print()

@@ -1,8 +1,9 @@
 import numpy as np
-
-actions = np.load("body/PinkPanther/new-0_actions.npy")
+folder = '23_01_2022'
+gait = 'best_overall'
+actions = np.load("body/PinkPanther/params/HillClimber/{}/{}_actions.npy".format(folder, gait))
 #actions = np.load('body/PinkPanther/params/ROB/new-0.npy')
-#print(actions)
+print(actions)
 
 delta_actions = []
 

@@ -151,6 +151,7 @@ if __name__ == '__main__':
 	epochs = 50
 	epoch_master = [-np.inf, []]
 	epoch_runnerup = [-np.inf, []]
+	new_folder = '23_01_2022_0'
 	print()
 	print()
 	for i in range(epochs):
@@ -158,9 +159,10 @@ if __name__ == '__main__':
 		print('EPOCH {}'.format(i+1))
 		# perform hill climber
 		best = continuous_hill_climber(env)
-		if not os.path.isdir('../body/PinkPanther/params/train1'):
-			os.makedirs('../body/PinkPanther/params/train1')
-		path = os.path.join('../body/PinkPanther/params/train1', 'best_epoch{}'.format(i+1))
+		if not os.path.isdir('body/PinkPanther/params/HillClimber/{}'.format(new_folder)):
+			os.makedirs('body/PinkPanther/params/HillClimber/{}'.format(new_folder))
+			print('directory created')
+		path = os.path.join('body/PinkPanther/params/HillClimber/{}'.format(new_folder), 'best_epoch{}'.format(i+1))
 		np.save(path, best[1])
 		print('Score of best gait: {}'.format(best[0]))
 		# update best so far
@@ -172,11 +174,11 @@ if __name__ == '__main__':
 	print()
 	print()
 	print('BEST GAIT OVERALL: {}'.format(epoch_master[0]))
-	if not os.path.isdir('../body/PinkPanther/params/train0'):
-		os.makedirs('../body/PinkPanther/params/train0')
-	path = os.path.join('../body/PinkPanther/params/train0', 'best_overall')
+	#if not os.path.isdir('../body/PinkPanther/params/HillClimber/23_01_2022'):
+	#	os.makedirs('../body/PinkPanther/params/HillClimber/23_01_2022')
+	path = os.path.join('body/PinkPanther/params/HillClimber/{}'.format(new_folder), 'best_overall')
 	np.save(path, epoch_master[1])
 	print()
 	print('RUNNERUP: {}'.format(epoch_runnerup[0]))
-	path = os.path.join('../body/PinkPanther/params/train0', 'runnerup_overall')
+	path = os.path.join('body/PinkPanther/params/HillClimber/{}'.format(new_folder), 'runnerup_overall')
 	np.save(path, epoch_runnerup[1])

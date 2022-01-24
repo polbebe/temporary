@@ -85,7 +85,7 @@ class PinkPantherEnv(gym.Env):
 	def act(self, action):
 		action = action + np.random.normal(0, max(self.params['act_noise'], 0)) #??? Introduces noise ?
 		n_sim_steps = int(240/self.params['APS'])
-
+		#smoothing?
 		if self.count == 0:
 			pos_prev = self.convFns([0., 0.15, 0.09572864, 0., 0.15, 0.10310078, 0., 0.15, 0.09572864, 0., 0.15, 0.10310078], "sim2real")
 			pos = self.convFns(action, "sim2real")
@@ -247,7 +247,7 @@ def get_action(steps):
 	#params = np.array([0.15, 0.0, 0.2, 0.15, 0.2, 0]) #	sim BAD			real BAD		Jul 31,	19:00 	Smooth Criminal
 	#params = np.array([0.15, 0.0, 0.19, 0.2, 0.23, 2.05]) # sim 0.04m/s 	real 0.05m/s 	Dec 1,	21:43
 	params = np.array(np.load('body/PinkPanther/params/ROB/new-0.npy'))
-	params[4] -= 22
+	params[4] -= 4
 	print(params)
 	#print(params[4])
 
@@ -291,7 +291,7 @@ if __name__ == '__main__':
 			obs, r, done, info, rew = env.step(action)
 			reward += rew
 	#reward += 10 * (env.get_dist_and_time()[0][0][0]/0.1)
-	path = os.path.join('body/PinkPanther', 'new-0_actions')
+	path = os.path.join('body/PinkPanther', 'new-0_actions_-3.7')
 	np.save(path, actions)
 	print()
 	print(reward)
