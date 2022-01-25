@@ -250,11 +250,11 @@ if __name__ == '__main__':
 
 	# reward for gait
 	reward = 0
-	folder = '23_01_2022'
+	folder = '24_01_2022_1'
 	gait = 'best_overall'
 	actions = []
 	start = time.time()
-	stps = 300
+	stps = 100
 	for i in range(stps):
 		action = get_action(i, folder, gait)
 		#print(action)
