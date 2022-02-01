@@ -25,7 +25,7 @@
     </inertial>
     <visual>
       <origin
-        xyz="0 0 0"
+        xyz="0.00330331665446667 0.0134210233318688 0.000330796304878542"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -37,7 +37,7 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
+        xyz="0.00330331665446667 0.0134210233318688 0.000330796304878542"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -63,7 +63,7 @@
     </inertial>
     <visual>
       <origin
-        xyz="0 0 0"
+        xyz="-0.03075 0.010763 0.045764"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -75,7 +75,7 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
+        xyz="-0.03075 0.010763 0.045764"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -119,7 +119,7 @@
     </inertial>
     <visual>
       <origin
-        xyz="0 0 0"
+        xyz="0.059996 -0.034184 0.032377"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -131,7 +131,7 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
+        xyz="0.059996 -0.034184 0.032377"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -175,7 +175,7 @@
     </inertial>
     <visual>
       <origin
-        xyz="0 0 0"
+        xyz="-0.0562746607594241 -0.0312019222312566 0.0300902624876031"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -187,7 +187,7 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
+        xyz="-0.0562746607594241 -0.0312019222312566 0.0300902624876031"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -231,7 +231,7 @@
     </inertial>
     <visual>
       <origin
-        xyz="0 0 0"
+        xyz="-0.030838 0.010759 -0.045563"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -243,7 +243,7 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
+        xyz="-0.030838 0.010759 -0.045563"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -287,7 +287,7 @@
     </inertial>
     <visual>
       <origin
-        xyz="0 0 0.0055"
+        xyz="0.059996319544716 -0.0341838862880749 -0.0326354177099718"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -299,7 +299,7 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0.0055"
+        xyz="0.059996319544716 -0.0341838862880749 -0.0326354177099718"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -343,7 +343,7 @@
     </inertial>
     <visual>
       <origin
-        xyz="0 0 -0.0005"
+        xyz="-0.0562746594086836 -0.031201912312426 -0.0304061026125255"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -355,7 +355,7 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 -0.0005"
+        xyz="-0.0562746594086836 -0.031201912312426 -0.0304061026125255"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -399,7 +399,7 @@
     </inertial>
     <visual>
       <origin
-        xyz="0.0057 0 0"
+        xyz="0.0268112424173798 0.0107596960598041 0.0457636308417059"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -411,7 +411,7 @@
     </visual>
     <collision>
       <origin
-        xyz="0.0057 0 0"
+        xyz="0.0268112424173798 0.0107596960598041 0.0457636308417059"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -455,7 +455,7 @@
     </inertial>
     <visual>
       <origin
-        xyz="0 0 0"
+        xyz="0.0599962531882521 -0.0341838743931865 0.0323774662751334"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -467,7 +467,7 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
+        xyz="0.0599962531882521 -0.0341838743931865 0.0323774662751334"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -511,7 +511,7 @@
     </inertial>
     <visual>
       <origin
-        xyz="0 0 0"
+        xyz="-0.0562746283337433 -0.0312019131985415 0.0300903536116095"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -523,7 +523,7 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
+        xyz="-0.0562746283337433 -0.0312019131985415 0.0300903536116095"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -567,7 +567,7 @@
     </inertial>
     <visual>
       <origin
-        xyz="0.0069 0 0"
+        xyz="0.0267231655282443 0.010762075261042 -0.0455633379422674"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -579,7 +579,7 @@
     </visual>
     <collision>
       <origin
-        xyz="0.0069 0 0"
+        xyz="0.0267231655282443 0.010762075261042 -0.0455633379422674"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -623,7 +623,7 @@
     </inertial>
     <visual>
       <origin
-        xyz="0 0 0"
+        xyz="0.0599962641867017 -0.0341838839492449 -0.0322633194933277"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -635,7 +635,7 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
+        xyz="0.0599962641867017 -0.0341838839492449 -0.0322633194933277"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -679,7 +679,7 @@
     </inertial>
     <visual>
       <origin
-        xyz="0 0 0"
+        xyz="-0.0562746202737299 -0.031201906093811 -0.0300128862017215"
         rpy="0 0 0" />
       <geometry>
         <mesh
@@ -691,7 +691,7 @@
     </visual>
     <collision>
       <origin
-        xyz="0 0 0"
+        xyz="-0.0562746202737299 -0.031201906093811 -0.0300128862017215"
         rpy="0 0 0" />
       <geometry>
         <mesh

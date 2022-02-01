@@ -90,6 +90,7 @@ class PinkPantherEnv(gym.Env):
 			p.stepSimulation()
 		for i in range(len(action)):
 			pos, vel, forces, torque = p.getJointState(self.robotid, i)
+			# Troubled motors are 8 & 11
 			if i>5:
 				p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce']/1.1, maxVelocity=self.params['maxVel']/1.6)
 			else:
@@ -218,9 +219,9 @@ def get_action(steps, folder, gait):
 	#params = np.array([0.1, 0.0, 0.13, 0.2, 0.3, 2]) # 	sim 0.12m/s 	real 0.03m/s 	Dec 1,	11:51
 	#params = np.array([0.15, 0.0, 0.2, 0.15, 0.2, 0]) #	sim BAD			real BAD		Jul 31,	19:00 	Smooth Criminal
 	#params = np.array([0.15, 0.0, 0.19, 0.2, 0.23, 2.05]) # sim 0.04m/s 	real 0.05m/s 	Dec 1,	21:43
-	p = np.load('body/PinkPanther/params/HillClimber/{}/{}.npy'.format(folder, gait))
-	#print(p)
-	params = np.array(p)
+	params = np.array(np.load('body/PinkPanther/params/HillClimber/{}/{}.npy'.format(folder, gait)))
+	params = np.array([-0.16476964, 0.02548534, 0.16893791, 0.09441782, 9.44620473, -6.1950588])
+	params = np.array([ 0.22853782, 0.06146434, 0.25060128, 0.09051928, 10.81942692, 2.98455422])
 
 	return act(steps, *params)
 
@@ -244,28 +245,27 @@ def act(t, p0, p1, p2, p3, p4, p5):
 
 if __name__ == '__main__':
 	env = PinkPantherEnv(render=True)
-	#print(find_fric_params(env))
 	
-	obs = env.reset()
-
-	# reward for gait
-	reward = 0
+	pos = np.zeros((100,3))
 	folder = '24_01_2022_1'
 	gait = 'best_overall'
-	actions = []
+	#actions = []
 	start = time.time()
+
+	obs = env.reset()
+	reward = 0
 	stps = 100
 	for i in range(stps):
 		action = get_action(i, folder, gait)
-		#print(action)
-		actions.append(action)
+		#actions.append(action)
 		done = False
 		while not done:
 			obs, r, done, info, rew = env.step(action)
+			pos[i] = obs[-3:][::-1]
 			reward += rew
 	#reward += 10 * (env.get_dist_and_time()[0][0][0]/0.1)
-	path = os.path.join('body/PinkPanther/params/HillClimber/{}'.format(folder), '{}_actions'.format(gait))
-	np.save(path, actions)
+	#path = os.path.join('body/PinkPanther/params/HillClimber/{}'.format(folder), '{}_actions'.format(gait))
+	#np.save(path, actions)
 	print()
 	print(reward)
 	print()
