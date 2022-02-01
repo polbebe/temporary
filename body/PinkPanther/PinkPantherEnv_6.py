@@ -90,9 +90,10 @@ class PinkPantherEnv(gym.Env):
 			p.stepSimulation()
 		for i in range(len(action)):
 			pos, vel, forces, torque = p.getJointState(self.robotid, i)
-			# Troubled motors are 8 & 11
-			if i>5:
+			if i in [6, 9]:
 				p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce']/1.1, maxVelocity=self.params['maxVel']/1.6)
+			if i in [7, 8, 10, 11]:
+				p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce']/1.23, maxVelocity=self.params['maxVel']/1.3)
 			else:
 				p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce']/1.1, maxVelocity=self.params['maxVel']/1.3)
 
@@ -220,8 +221,8 @@ def get_action(steps, folder, gait):
 	#params = np.array([0.15, 0.0, 0.2, 0.15, 0.2, 0]) #	sim BAD			real BAD		Jul 31,	19:00 	Smooth Criminal
 	#params = np.array([0.15, 0.0, 0.19, 0.2, 0.23, 2.05]) # sim 0.04m/s 	real 0.05m/s 	Dec 1,	21:43
 	params = np.array(np.load('body/PinkPanther/params/HillClimber/{}/{}.npy'.format(folder, gait)))
-	params = np.array([-0.16476964, 0.02548534, 0.16893791, 0.09441782, 9.44620473, -6.1950588])
-	params = np.array([ 0.22853782, 0.06146434, 0.25060128, 0.09051928, 10.81942692, 2.98455422])
+	#params = np.array([-0.16476964, 0.02548534, 0.16893791, 0.09441782, 9.44620473, -6.1950588])
+	#params = np.array([ 0.22853782, 0.06146434, 0.25060128, 0.09051928, 10.81942692, 2.98455422])
 
 	return act(steps, *params)
 
@@ -245,11 +246,11 @@ def act(t, p0, p1, p2, p3, p4, p5):
 
 if __name__ == '__main__':
 	env = PinkPantherEnv(render=True)
-	
+
 	pos = np.zeros((100,3))
-	folder = '24_01_2022_1'
+	folder = '01_02_2022_0'
 	gait = 'best_overall'
-	#actions = []
+	# actions = []
 	start = time.time()
 
 	obs = env.reset()
