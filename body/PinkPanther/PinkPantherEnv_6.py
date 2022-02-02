@@ -223,6 +223,7 @@ def get_action(steps, folder, gait):
 	params = np.array(np.load('body/PinkPanther/params/HillClimber/{}/{}.npy'.format(folder, gait)))
 	#params = np.array([-0.16476964, 0.02548534, 0.16893791, 0.09441782, 9.44620473, -6.1950588])
 	#params = np.array([ 0.22853782, 0.06146434, 0.25060128, 0.09051928, 10.81942692, 2.98455422])
+	#params = np.array([ 0.2903189, -0.06100524, -0.16323856, 0.0775873, 15.89376,   12.37652221])
 
 	return act(steps, *params)
 
@@ -248,7 +249,7 @@ if __name__ == '__main__':
 	env = PinkPantherEnv(render=True)
 
 	pos = np.zeros((100,3))
-	folder = '01_02_2022_2'
+	folder = '01_02_2022_1'
 	gait = 'best_overall'
 	# actions = []
 	start = time.time()
