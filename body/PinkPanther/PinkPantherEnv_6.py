@@ -93,7 +93,7 @@ class PinkPantherEnv(gym.Env):
 			if i in [6, 9]:
 				p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce']/1.1, maxVelocity=self.params['maxVel']/1.6)
 			if i in [7, 8, 10, 11]:
-				p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce']/1.23, maxVelocity=self.params['maxVel']/1.3)
+				p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce']/1.3, maxVelocity=self.params['maxVel']/1.6)
 			else:
 				p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce']/1.1, maxVelocity=self.params['maxVel']/1.3)
 
@@ -120,10 +120,11 @@ class PinkPantherEnv(gym.Env):
 		#p.changeDynamics(self.robotid, 8, lateralFriction=friction_values[2], spinningFriction=friction_values[3], rollingFriction=0.0001)
 		#p.changeDynamics(self.robotid, 11, lateralFriction=friction_values[2], spinningFriction=friction_values[3], rollingFriction=0.0001)
 		# p.changeDynamics(planeId, -1, lateralFriction=0.99)
-		p.changeDynamics(self.robotid, 2, lateralFriction=0.99)
-		p.changeDynamics(self.robotid, 5, lateralFriction=0.99)
-		p.changeDynamics(self.robotid, 8, lateralFriction=0.99)
-		p.changeDynamics(self.robotid, 11, lateralFriction=0.99)
+		val = 10
+		p.changeDynamics(self.robotid, 2, lateralFriction=val)
+		p.changeDynamics(self.robotid, 5, lateralFriction=val)
+		p.changeDynamics(self.robotid, 8, lateralFriction=val)
+		p.changeDynamics(self.robotid, 11, lateralFriction=val)
 
 		self.p, self.q = p.getBasePositionAndOrientation(self.robotid)
 		self.p, self.q = np.array(self.p), np.array(self.q)
@@ -145,14 +146,13 @@ class PinkPantherEnv(gym.Env):
 			if self.render:
 				time.sleep(1./self.params['APS'])
 		# Reset up
-		for j in range(20):
+		for j in range(30):
 			for i in range(n_sim_steps):
 				p.stepSimulation()
 			vel = [1500, 1500, 1500, 1500, 1500, 1500, 1000, 1000, 1000, 1000, 1000, 1000]
 			for x in range(len(vel)):
 				vel[x] = vel[x]/150
-			#pos = [0., 0.15, 0.09572864, 0., 0.15, 0.10310078, 0., 0.15, 0.09572864, 0., 0.15, 0.10310078] #Normal Stand up
-			pos = [0., 0., 0., 0., 0., 0., 0., 0.15, 0.15, 0., 0.15, 0.15] # Params at t=0
+			pos = [0., 0.15, 0.0, 0., 0.15, 0.0, 0., 0.15, 0.0, 0., 0.15, 0.0] #Normal Stand up
 			for i in range(12):
 				p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=pos[i], force=self.params['maxForce'], maxVelocity=self.params['maxVel']/vel[i])
 			if self.render:
@@ -248,7 +248,7 @@ if __name__ == '__main__':
 	env = PinkPantherEnv(render=True)
 
 	pos = np.zeros((100,3))
-	folder = '01_02_2022_0'
+	folder = '01_02_2022_2'
 	gait = 'best_overall'
 	# actions = []
 	start = time.time()
@@ -262,7 +262,6 @@ if __name__ == '__main__':
 		done = False
 		while not done:
 			obs, r, done, info, rew = env.step(action)
-			pos[i] = obs[-3:][::-1]
 			reward += rew
 	#reward += 10 * (env.get_dist_and_time()[0][0][0]/0.1)
 	#path = os.path.join('body/PinkPanther/params/HillClimber/{}'.format(folder), '{}_actions'.format(gait))
