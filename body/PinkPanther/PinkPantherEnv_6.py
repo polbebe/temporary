@@ -20,7 +20,7 @@ class PinkPantherEnv(gym.Env):
 		self.mode = p.POSITION_CONTROL
 
 		self.params = {
-			'APS': 21, # Actions Per Second
+			'APS': 14, # Actions Per Second
 			'maxForce': 1.667,
 			'maxVel': 6.545,
 			'gravity': -9.8,
@@ -32,6 +32,8 @@ class PinkPantherEnv(gym.Env):
 		# setTimeStep should be uses here to modify the APS
 		# Should keep a param of the joint states to be more in line with real life
 		# need to figure out what the limits of the position control are
+
+		self.actions = []
 
 		self.stepper = 0
 
@@ -48,6 +50,9 @@ class PinkPantherEnv(gym.Env):
 		self.observation_space = gym.spaces.Box(high=obs_high, low=-obs_high)
 		act_high = np.ones(12)
 		self.action_space = gym.spaces.Box(high=act_high, low=-act_high)
+
+	def get_actions(self):
+		return self.actions
 
 	def close(self):
 		p.disconnect(self.physicsClient)
@@ -86,16 +91,12 @@ class PinkPantherEnv(gym.Env):
 		action = self.obs[:len(action)] + delta
 		action = action + np.random.normal(0, max(self.params['act_noise'], 0))
 		n_sim_steps = int(240/self.params['APS'])
+		self.actions.append(self.obs[:len(action)])
 		for i in range(n_sim_steps):
 			p.stepSimulation()
 		for i in range(len(action)):
 			pos, vel, forces, torque = p.getJointState(self.robotid, i)
-			if i in [6, 9]:
-				p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce']/1.1, maxVelocity=self.params['maxVel']/1.6)
-			if i in [7, 8, 10, 11]:
-				p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce']/1.3, maxVelocity=self.params['maxVel']/1.6)
-			else:
-				p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce']/1.1, maxVelocity=self.params['maxVel']/1.3)
+			p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce']/1.1, maxVelocity=self.params['maxVel']/1.6)
 
 			#p.setJointMotorControl2(self.robotid, i, controlMode=self.mode, targetPosition=action[i], force=self.params['maxForce'], maxVelocity=self.params['maxVel'])
 		if self.render:
@@ -125,6 +126,13 @@ class PinkPantherEnv(gym.Env):
 		p.changeDynamics(self.robotid, 5, lateralFriction=val)
 		p.changeDynamics(self.robotid, 8, lateralFriction=val)
 		p.changeDynamics(self.robotid, 11, lateralFriction=val)
+
+
+		# Get name and number of joints
+		#numJoints = p.getNumJoints(self.robotid)
+		#for i in range(numJoints):
+		#	name = p.getJointInfo(self.robotid, i)[1]
+		#	print('Joint {}: {}'.format(i, name))
 
 		self.p, self.q = p.getBasePositionAndOrientation(self.robotid)
 		self.p, self.q = np.array(self.p), np.array(self.q)
@@ -224,6 +232,7 @@ def get_action(steps, folder, gait):
 	#params = np.array([-0.16476964, 0.02548534, 0.16893791, 0.09441782, 9.44620473, -6.1950588])
 	#params = np.array([ 0.22853782, 0.06146434, 0.25060128, 0.09051928, 10.81942692, 2.98455422])
 	#params = np.array([ 0.2903189, -0.06100524, -0.16323856, 0.0775873, 15.89376,   12.37652221])
+	#params = np.array([ 0.31607133, -0.04617572, -0.25435251,  0.09736614, -8.81590009,  6.12591908]) # NewEnv Sim2Sim2Real 12_02_2022
 
 	return act(steps, *params)
 
@@ -249,9 +258,9 @@ if __name__ == '__main__':
 	env = PinkPantherEnv(render=True)
 
 	pos = np.zeros((100,3))
-	folder = '01_02_2022_1'
+	folder = '23_01_2022'
 	gait = 'best_overall'
-	# actions = []
+	#actions = []
 	start = time.time()
 
 	obs = env.reset()
@@ -265,7 +274,8 @@ if __name__ == '__main__':
 			obs, r, done, info, rew = env.step(action)
 			reward += rew
 	#reward += 10 * (env.get_dist_and_time()[0][0][0]/0.1)
-	#path = os.path.join('body/PinkPanther/params/HillClimber/{}'.format(folder), '{}_actions'.format(gait))
+	#actions = env.get_actions()
+	#path = os.path.join('body/PinkPanther/params/Tests/', '{}_actions'.format('12_02_2022_actual'))
 	#np.save(path, actions)
 	print()
 	print(reward)

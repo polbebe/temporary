@@ -151,7 +151,7 @@ if __name__ == '__main__':
 	epochs = 50
 	epoch_master = [-np.inf, []]
 	epoch_runnerup = [-np.inf, []]
-	new_folder = '02_02_2022_0'
+	new_folder = '18_02_2022'
 	print()
 	print()
 	for i in range(epochs):
